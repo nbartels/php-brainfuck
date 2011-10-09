@@ -1,0 +1,323 @@
+<html>
+<head>
+  <title>daniel lorch | brainfuck</title>
+  <link rel=stylesheet type="text/css" href="site.css">
+</head>
+<body bgcolor="#FFFFFF">
+
+  <div align="center">
+    <img src="images/brainfuck_inofficial_logo.jpg" width="185" height="185" alt="Inofficial brainfuck logo done by me">
+  </div>
+
+  <p class="title">A brainfuck interpreter in PHP</p>
+  
+  <p class="smalltitle">Introduction</p>
+  
+  <p class="text">Brainfuck is a turing-complete programming language with only <span class="notice">eight instructions</span>.</p>
+
+  <p class="text"><a href="http://wuarchive.wustl.edu/~umueller/" target="_blank">Urban Müller</a>, who invented
+    this language, aimed to create a compiler which was as small as possible. And he indeed succeeded
+	to create a compiler on his Amiga which was only 240 Bytes long. Since then ports to many
+	different platforms have been made. The language itself is <a href="http://www.google.com/search?q=turing+machine" target="_blank">turing-complete</a>
+    and thus capable of performing any arbitrary computation. </p>
+
+  <p class="text">Brainfuck's unusual name might lead you to think of it as a preposterous and absurd invention. In
+    fact, Brainfuck was meant to be named "Mental Masturbation" first, but he then stuck to "Brainfuck".</p>
+
+  <p class="text">What makes brainfuck fascinating is it's minimalistic, but not limiting set of instructions. The
+    language is absolutely redundance-free, i.e. no instruction could be replaced by another. There is still more
+	than one way of doing it (<a href="http://www.wall.org/~larry/" target="_blank">Larry Wall</a>&trade;) but the
+	language constructs itself are unique and not interchangeable.</p>
+	
+  <p class="text">For example, brainfuck will only provide you a loop instruction. You will then discover that
+    a condition ("if") is basically a loop which either gets executed once or never. An "else" could be implemented
+	by checking whether the "if" condition was true or not. Adding 5 to 3 is running through a loop 5 times while
+	increasing 3 by one every time. You will start spending hours implementing basic language constructs you
+	know from other languages, but now actually <span class="notice">understand</span> how they might work on a
+	much lower, machine-level. Eventually, you might even implement some more complex algorithms.</p>
+	
+  <p class="text">Brainfuck is not meant to be a "productive language". Programming BF is uncomfortable, sometimes
+    even tedious, but it allows you to express complex problems with only a minimalistic vocabulary. Or did you every
+	try to quote Shakespeare with only eight words while still <span class="notice">preserving accuracy</span>?
+	It is not an easy task, but it's certainly entertaining and a worthwhile thing to do. Besides, who else can
+	enter pages of apparently incomprehensible code which actually produce some cool output?</p>
+	
+  <p class="smalltitle">Motivation</p>
+    
+  <p class="text">My motivation was to prove whether PHP was capable of interpreting another language at decent
+    speed - and of course to challenge myself (as usual). I strictly only relied on low-level functions (instead
+	of using for example regular expressions) which make this proof more accurate.</p>
+
+  <p class="text">Not surprisingly, the result is significantly slower than compareable interpreters written
+    in C. But it is still fast enough to run semi-complex BF scripts at useful speed.</p>
+	
+  <p class="text">As far as I'm informed, there is no other language written in PHP which does parsing
+    itself (although I could be proven wrong here. <a href="mailto:dlorch@gmail.com" target="_blank">Contact me</a> in such case, as
+	this topic does really interest me). There is a Meta-language by Manuel Lemos called
+	<a href="http://www.meta-language.net/" target="_blank">MetaL</a>, but it relies on PHP's internal
+	XML parser. To be honest, I don't expect any other sane human being to write a parser in PHP,
+	as this is not only slow, but also terribly useless. The usual approach to add functionality to
+	PHP is to write a module in C.</p>
+
+  <p class="smalltitle">Availability</p>
+  
+  <p class="text">The official project page can be found at: <a href="https://github.com/dlorch/php-brainfuck" target="_blank">https://github.com/dlorch/php-brainfuck</a></p>
+  
+  <p class="smalltitle">Implementation</p>
+  
+  <p class="text">This chapter will teach you how to <span class="notice">invoke</span> the brainfuck
+   interpreter (the actual BF syntax is covered in the next two chapters).</p>
+  
+  <p class="text">The brainfuck interpreter is a function which takes as a first argument the BF script.
+    It will return the script output as a string. For example, the following lines will produce the famous
+	"Hello World" output:</p>
+   
+<p class="php_container">
+<span class="php_keyword">include&nbsp;</span><span class="php_string">"brainfuck.php"</span><span class="php_keyword">;
+<br />
+<br />echo&nbsp;</span><span class="php_default">brainfuck</span><span class="php_keyword">(
+<br />&nbsp;&nbsp;</span><span class="php_string">"&gt;++++[&lt;++++++++++++++++&gt;-]&lt;++++++++.&gt;++[&lt;++++++++++++++++&gt;-]&lt;---.+++++++..+++.
+<br />&nbsp;&nbsp;&gt;+++++[&lt;----------------&gt;-]&lt;+.&gt;+++[&lt;++++++++++++++++&gt;-]&lt;+++++++.++++++++++++++
+<br />&nbsp;&nbsp;++++++++++.+++.------.--------."
+<br /></span><span class="php_keyword">);</span>
+</p>
+   
+  <p class="text">The main difference from this parser to others is the noninteractive nature of PHP. I
+    decided an input string to simulate keyboard input. The input string is simply a stack of characters
+	where I successively read out characters every time the script requests an input. If this stack is
+	empty (i.e. the end of the input string is reached) the interpreter will start sending
+	ASCII-character 0, which usually stops loops that require your input.</p>
+  
+<p class="php_container">
+<span class="php_keyword">include&nbsp;</span><span class="php_string">"brainfuck.php"</span><span class="php_keyword">;
+<br />
+<br />echo&nbsp;</span><span class="php_default">brainfuck</span><span class="php_keyword">(</span><span class="php_string">"+[&gt;,]&lt;-[+.&lt;-]"</span><span class="php_keyword">,&nbsp;</span><span class="php_string">"Was it a car or a cat I saw?"</span><span class="php_keyword">);
+<br /></span>
+</p>
+
+  <p class="text">This BF script outputs it's input in reverse order. As this sentence is a palindrome, it should read
+    the same backwards.</p>
+
+  <p class="text">For scripts which require for example a return key to be pressed, just add a <span class="notice">chr(10)</span>
+    at the end. The ASCII-character '10' stands for line-feed (=return key). You could simulate every ASCII character
+	with <a href="http://php.net/chr" target="_blank">chr</a> (strings in PHP are binary-safe). Make sure you have
+	a good <a href="http://www.mindspring.com/~jc1/serial/Resources/ASCII.html" target="_blank">ASCII-chart</a>, otherwise
+	you are lost.</p>
+
+  <p class="smalltitle">Syntax</p>
+  
+  <p class="text">Brainfuck's syntax is very easy to learn. There are only eight instructions, as already mentioned. Here's the
+    overview I borrowed from the official brainfuck documentation:</p>
+	
+  <div align="center">
+  <table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+    <td class="text">
+  <pre class="bf_container">Cmd  Effect 				Equivalent in C
+---  ------				    ---------------
++    Increases element under pointer	    array[p]++;
+-    Decrases element under pointer	    array[p]--;
+>    Increases pointer			    p++;
+<    Decreases pointer			    p--;
+[    Starts loop, counter under pointer     while(array[p]) {
+]    Indicates end of loop		    }
+.    Outputs ASCII code under pointer	    putchar(array[p]);
+,    Reads char and stores ASCII under ptr  array[p]=getchar();</p></td>
+  </tr>
+  </table>
+  </div>
+  
+  <p class="text">All other characters are ignored, thus comments can directly be embedded into
+    BF scripts. My interpreter also supports the debug character '#' which will call an external
+	PHP function called 'brainfuck_debug()'. This function can be customized by you to output
+	whatever seems important to you. By default it will output all array elements (pointers) which
+	have been used during the script execution including their values and representing ASCII-characters.</p>
+  
+  <p class="text">If this makes sense to you, jump to the tutorial, otherwise read on.</p>
+  
+  <p class="text">Brainfuck's memory is an array of chars. A char is a data type which can hold one byte, thus
+    a numerical value from 0 to 255. A char can represent a character in your
+	<a href="http://www.mindspring.com/~jc1/serial/Resources/ASCII.html" target="_blank">character table</a>
+	(hence the name 'char'). A character can be either a letter or a digit, or it can also represent special
+	characters such as line-feed or tab. Just have a quick look at the character table above showing
+	the ASCII-character set (which is a subset of all possible characters - the usage of the remaining 128
+	characters varies).</p>
+  
+  <p class="text">While the original implementation of brainfuck had a fixed number of array elements (30'000)
+    implementing this in my interpreter, which supports arrays of dynamic size, felt artificial. Also, the number
+	30'000 neither seems to represent a logical boundary, nor does it seem to crash existing scripts by leaving it out
+	(at least, this is my assumption). Checking whether you are still within the 30'000 boundary would mean a
+	serious impact on performance and leaving it out looks like a logical decision to me.</p>
+  
+  <p class="text">Now let's get started.</p>
+  
+  <p class="text">The first four commands are obvious: There are two commands which allow you to move
+    backwards '&lt;' and forward '&gt;' in this array. In C, pointers and arrays are closely related,
+	hence the 'increase/decrease pointer' above. As a PHP programmer you should be more familiar with
+	<span class="notice">array key</span> or <span class="notice">array index</span>. A '&gt;' would
+	therefore move you from $a[0] to $a[1].</p>
+  
+  <p class="text">The next two commands increase '+' or decrease '-' the value at the current
+    index. An unused element always starts at 0. A BF command like '+++' would set $a[0] to 3.</p>
+  
+  <p class="text">A loop is delimited by '[' and ']'. A loop runs until the value of the current
+    element is 0. If it is already 0, the whole loop is skipped (including nested loops). As you
+	see, it exactly behaves like while(), where the appropriate condition would be
+	<span class="notice">while($a[p] != 0)</span>. The following BF script first sets the current
+	element to 3, then runs the loop 3 times until it is 0 again: +++[-]. A statement like [] would
+	be an infinite loop (in case the current element is not 0), thus a script which would run
+	endlessly looks like: +[].</p>
+  
+  <p class="text">The last two commands are required for user interaction. The comma ',' reads one
+    character and puts it's numerical value into the current register. The dot '.' outputs the
+	current character. A BF script like ',.' reads a character, then outputs it.</p>
+	
+  <p class="text">Don't be frustrated if you didn't understand everything perfectly - I tried to be
+    very brief here. Follow the tutorial to get a more hands-on introduction to the language.</p>
+ 
+  <p class="smalltitle">Tutorial</p>
+
+  <p class="text">Let us start with the ubiquitous "Hello World" script. We have to look up the numerical value
+    for every letter and then print them out. You can either use the
+	<a href="http://www.mindspring.com/~jc1/serial/Resources/ASCII.html" target="_blank">ASCII-chart</a>
+	or the PHP function <a href="http://php.net/ord" target="_blank">ord()</a>.
+	<span class="notice">ord('H')</span> returns 72, thus we have to increment the current value to 72.
+	This is done by writing '+' 72 times and then output this character with a dot. 
+	</p>
+  
+  <p class="bf_container">
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+  </p>
+  
+  <p class="text">The next character, 'e' has an ordinal value of 101, thus we have to increase the
+    current value by another 29.</p>
+  
+  <p class="bf_container">
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.<br>
+  +++++++++++++++++++++++++++++.
+  </p>
+  
+  <p class="text">This would already output "He". But before we follow this tedious pattern, let's start
+    over. We will now make use of loops.</p>
+  
+  <p class="bf_container">
+    +++++++[-]
+  </p>
+  
+  <p>Now this is a loop which gets executed 7 times, but it does nothing useful. We want to store this value
+    somewhere:</p>
+  
+  <p class="bf_container">
+    +++++++[-<span class="bf_important">&gt;+&lt;</span>]
+  </p>
+  
+  <p class="text">Inside the loop, we first jump to the next element $a[1], increment it by one, then jump back to the
+    counter element $a[0]. It is necessary to be at the counter-element $a[0] at the end of the loop ']', because its value
+	decides whether the loop gets executed one again or not.</p>
+  
+  <p class="text">What we did could either be described as "moving element 0 to element 1" or "adding element 0
+    to element 1" (although the initial value for the first addend gets lost). Both are correct - it only depends
+	on how you look at it. Now add two debug characters to illustrate this:</p>
+  
+  <p class="bf_container">
+    +++++++<span class="bf_important">#</span>[-&gt;+&lt;]<span class="bf_important">#</span>
+  </p>
+  
+  <p class="text">A multiplication of 7 by 10 could be described as a repetitive addition of 10 which occurs 7 times.
+    In brainfuck, this looks like this:</p>
+  
+  <p class="bf_container">
+    +++++++[-&gt;<span class="bf_important">++++++++++</span>&lt;]
+  </p>
+  
+  <p class="text">This will result in the value 70 in the second element. Add 2 and we have 'H':</p>
+  
+  <p class="bf_container">
+    +++++++[-&gt;++++++++++&lt;]<span class="bf_important">&gt;++.</span>
+  </p>
+  
+  <p class="text">Adding the remaining letters is analogous, thus not anymore discussed here - try it for yourself.</p>
+  
+  <p class="text">You now already know how to move a value from a register to another, how to add two numbers and
+    how a multiplication works - although you can currently only operate in a range between 0 and 255. Using bigger
+	numbers would require to combine two (or more) registers (which is not covered here).</p>
+  
+  <p class="text">The next thing worth doing is reacting to user input. We will read everything the user inputs,
+    then output it in the same order, i.e. "echo" it back.</p>
+  
+  <p class="bf_container">
+  <span class="bf_important">&gt;</span>
+  </p>
+
+  <p class="text">The first thing to do is to leave the first element to 0. This is important when 'rewinding' the
+    pointer, as you will see afterwards (the loop will stop there).</p>
+  
+  <p class="bf_container">
+  &gt;<span class="bf_important">+</span>
+  </p>
+ 
+  <p class="text">The following loop has to be executed at least once, thus we have to set the current element to
+    non-zero.</p>
+	
+  <p class="bf_container">
+  &gt;+<span class="bf_important">[&gt;,]</span>
+  </p>
+  
+  <p class="text">This will read all user input. The loop is executed as long as the current element (=the character
+    the user has entered) is non-zero. As already mentioned before, my interpreter starts sending the zero value as
+	soon as the end of the input string is reached, thus you don't have to explicitly add <span class="notice">chr(0)</span>
+	at the end of your input string.</p>
+  
+  <p class="text">Now would be a good time to call the debug function. The first elements are our helper-elements,
+    followed by whatever you entered and terminated by a zero value. We now want to rewind the pointer to the beginning:</p>
+  
+  <p class="bf_container">
+  &gt;+[&gt;,]<span class="bf_important">&lt;[&lt;]</span>
+  </p>
+  
+  <p class="text">We first move to the last character entered by the user, then move back until the current
+    element equals 0. You guessed it - this loop stops at the first element we intentionally left empty.
+	Now skip the first two characters as we don't want to output them:</p>
+  
+  <p class="bf_container">
+  &gt;+[&gt;,]&lt;[&lt;]<span class="bf_important">&gt;&gt;</span>
+  </p>
+  
+  <p class="text">And finally output everything:</p>
+  
+  <p class="bf_container">
+  &gt;+[&gt;,]&lt;[&lt;]&gt;&gt;<span class="bf_important">[.&gt;]</span>
+  </p>
+  
+  <p class="text">Now it's up to you to create your own scripts. There are some more examples in the
+    <a href="examples/">/examples/</a> directory of the interpreter package (some which I wrote myself, some I got from the
+	internet (always credited)). Also have a look at the links I selected for you. There are plenty
+	of examples which demonstrate more complex calculations (Pi, prime numbers ..) or explain various
+	aspects of brainfuck.</p>
+  
+  <p class="text">Have fun!</p>
+  
+  <p class="smalltitle">Links</p>
+  
+  <p class="text">On <a href="http://cydathria.com/bf/" target="_blank">Mr. Rock's Brainfuck Pages</a> you will find
+    another tutorial to brainfuck. His tutorial covers similar topics to mine, but explained differently (for example, he
+	uses much code in C for explanations).</p>
+  
+  <p class="text"><a href="http://esoteric.sange.fi/brainfuck/" target="_blank">The Brainfuck Archive</a> is a comprehensive
+    archive of BF scripts, other interpreters and compilers.</p>
+  
+  <p class="text"><a href="http://www.nvg.ntnu.no/amiga/source/div/" target="_blank">Loose ends and MC680X0 sources</a> has
+    a portable brainfuck interpreter written in C (compiles just fine with gcc), an assembler (for MC680X0 architectures)
+	and most important, the <a href="http://www.nvg.ntnu.no/amiga/source/div/brainfuck.readme" target="_blank">original
+	documentation</a>, which you should consider to read.</p>
+  
+  <p class="text"><a href="http://home.wxs.nl/~faase009/Ha_bf_intro.html" target="_blank">Frans Faase's Introduction to BF</a>
+    is not actually what you would expect from an 'introduction'. He explains how more complex constructs (conditions,
+	control flow, logical operators) could be realized in brainfuck - without giving you actual code examples. It is up
+	to you to write the appropriate code.</p>
+
+  <p class="text"><a href="http://www.dividuum.de/p/bf/" target="_blank">Florian Wesch</a> has similar and quite interesting
+    projects ongoing, such as a Brainfuck interpreting PHP extension (written in C), a Brainfuck Compiler .. </p>
+	
+</body>
+</html>
