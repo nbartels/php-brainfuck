@@ -1,7 +1,11 @@
-<pre><?php
+<?php
 
 include "../brainfuck.php";
 
-echo brainfuck(">+[>,]<[<]>>[.>]", "Hi, how are you?");
+$interpreter = new Brainfuck();
+$interpreter->setSource(">+[>,]<[<]>>[.>]");
+$interpreter->setInput("Hi, how are you?");
 
-?></pre>
+echo $interpreter->execute()->getOutput();
+
+?>

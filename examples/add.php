@@ -2,6 +2,9 @@
 
 include "../brainfuck.php";
 
-echo brainfuck("+++>++++<#[>+<-]#");
+$interpreter = new Brainfuck();
+$interpreter->setSource("+++>++++<#[>+<-]#");
+
+echo $interpreter->execute()->getOutput();
 
 ?>

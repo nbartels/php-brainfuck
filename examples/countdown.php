@@ -1,8 +1,9 @@
-<pre><?php
+<?php
 
 include "../brainfuck.php";
 
-echo brainfuck(
+$interpreter = new Brainfuck();
+$interpreter->setSource(
 "ASCII character for '9':
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  
@@ -16,4 +17,6 @@ echo brainfuck(
  [<<.->.>-]"
 );
 
-?></pre>
+echo $interpreter->execute()->getOutput();
+
+?>

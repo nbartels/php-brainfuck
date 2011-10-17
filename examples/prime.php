@@ -1,8 +1,9 @@
-<pre><?php
+<?php
 
 include "../brainfuck.php";
 
-echo brainfuck(
+$interpreter = new Brainfuck();
+$interpreter->setSource(
 "compute prime numbers
 to use type the max number then push Alt 1 0
 ===================================================================
@@ -228,6 +229,9 @@ numd numu teid teiu
 ++++++++++.[-]
 @
 
-", "10" . chr(10));
+");
+$interpreter->setInput("10" . chr(10));
 
-?></pre>
+echo $interpreter->execute()->getOutput();
+
+?>

@@ -1,9 +1,9 @@
-<pre>
 <?php
 
 include "../brainfuck.php";
 
-echo brainfuck(
+$interpreter = new Brainfuck();
+$interpreter->setSource(
 "[ 99 Bottles of Beer in Brainf*** by Eric Bock - ebock@uswest.net ]
 
 +++++++++>+++++++++>>>++++++[<+++>-]+++++++++>+++++++++>>>>>>+++++++++++++[<+++
@@ -47,5 +47,6 @@ echo brainfuck(
 +++.[-]<<<[>>+>+>+<<<<-]>>[<<+>>-]<[>+>+>>+<<<<-]>[<+>-]>]
 ");
 
+echo $interpreter->execute()->getOutput();
+
 ?>
-</pre>
